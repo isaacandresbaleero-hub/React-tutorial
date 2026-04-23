@@ -1,66 +1,66 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
-import Layout from './components/Layout';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import StudentDashboard from './pages/StudentDashboard';
-import WorkplaceDashboard from './pages/WorkplaceDashboard';
-import AcademicDashboard from './pages/AcademicDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import Internships from './pages/Internships';
-import WeeklyLogs from './pages/WeeklyLogs';
-import Evaluations from './pages/Evaluations';
-import Profile from './pages/Profile';
-import './App.css';
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
+import { useAuth } from './contexts/AuthContext'
+import Navbar from './components/Layout/Navbar'
+import PrivateRoute from './components/Layout/PrivateRoute'
+import Login from './components/auth/Login'
+import Register from './components/auth/Register'
+import StudentDashboard from './components/dashboard/StudentDashboard'
+import AcademicSupervisorDashboard from './components/dashboard/AcademicSupervisorDashboard'
+import WorkplaceSupervisorDashboard from './components/dashboard/WorkplaceSupervisorDashboard'
+import AdminDashboard from './components/dashboard/AdminDashboard'
+import PlacementList from './components/placements/PlacementList'
+import PlacementForm from './components/placements/PlacementForm'
+import PlacementDetail from './components/placements/PlacementDetail'
+import WeeklyLogForm from './components/logs/WeeklyLogForm'
+import WeeklyLogList from './components/logs/WeeklyLogList'
+import WeeklyLogReview from './components/logs/WeeklyLogReview'
 
-// The main App component - this is the heart of your React application
 function App() {
-  const { user } = useAuth();  // Get user info from AuthContext
+  const { user, loading } = useAuth()
 
-  // Helper function to determine which dashboard to show based on user role
-  const getDashboardByRole = () => {
-    if (!user) return '/login';
-    
-    switch (user.role) {
-      case 'student': return '/student-dashboard';
-      case 'workplace_supervisor': return '/workplace-dashboard';
-      case 'academic_supervisor': return '/academic-dashboard';
-      case 'admin': return '/admin-dashboard';
-      default: return '/login';
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="app">
-      <Routes>
-        {/* PUBLIC ROUTES */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
-        {/* PROTECTED ROUTES */}
-        <Route element={<PrivateRoute />}>
-          <Route element={<Layout />}>
-            {/* Dashboards */}
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/workplace-dashboard" element={<WorkplaceDashboard />} />
-            <Route path="/academic-dashboard" element={<AcademicDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+    <>
+      <Toaster position="top-right" />
+      {user && <Navbar />}
+      <div className={user ? "pt-16" : ""}>
+        <Routes>
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+          
+          {/* Protected Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={
+              user?.role === 'student' ? <StudentDashboard /> :
+              user?.role === 'acad_supervisor' ? <AcademicSupervisorDashboard /> :
+              user?.role === 'work_supervisor' ? <WorkplaceSupervisorDashboard /> :
+              <AdminDashboard />
+            } />
             
-            {/* Common routes */}
-            <Route path="/internships" element={<Internships />} />
-            <Route path="/logs" element={<WeeklyLogs />} />
-            <Route path="/evaluations" element={<Evaluations />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/placements" element={<PlacementList />} />
+            <Route path="/placements/new" element={<PlacementForm />} />
+            <Route path="/placements/:id" element={<PlacementDetail />} />
+            <Route path="/placements/:id/edit" element={<PlacementForm />} />
             
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to={getDashboardByRole()} />} />
+            <Route path="/placements/:placementId/logs" element={<WeeklyLogList />} />
+            <Route path="/placements/:placementId/logs/new" element={<WeeklyLogForm />} />
+            <Route path="/placements/:placementId/logs/:weekNumber/edit" element={<WeeklyLogForm />} />
+            
+            <Route path="/logs/review" element={<WeeklyLogReview />} />
           </Route>
-        </Route>
-      </Routes>
-    </div>
-  );
+        </Routes>
+      </div>
+    </>
+  )
 }
 
-export default App;
+export default App
