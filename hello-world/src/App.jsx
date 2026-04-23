@@ -13,6 +13,7 @@ import Internships from './pages/Internships';
 import WeeklyLogs from './pages/WeeklyLogs';
 import Evaluations from './pages/Evaluations';
 import Profile from './pages/Profile';
+import Register from "./pages/Register";
 import './App.css';
 
 // The main App component - this is the heart of your React application
