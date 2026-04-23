@@ -13,7 +13,6 @@ import Internships from './pages/Internships';
 import WeeklyLogs from './pages/WeeklyLogs';
 import Evaluations from './pages/Evaluations';
 import Profile from './pages/Profile';
-import Register from "./pages/Register";
 import './App.css';
 
 // The main App component - this is the heart of your React application
@@ -35,30 +34,27 @@ function App() {
 
   return (
     <div className="app">
-      {/* Routes define which component to show for each URL */}
       <Routes>
-        {/* PUBLIC ROUTES - Anyone can access these */}
+        {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* PROTECTED ROUTES - Must be logged in */}
-        {/* The PrivateRoute component checks authentication */}
+        {/* PROTECTED ROUTES */}
         <Route element={<PrivateRoute />}>
-          {/* Layout provides the navbar and common structure */}
           <Route element={<Layout />}>
-            {/* Dashboard routes for different roles */}
+            {/* Dashboards */}
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/workplace-dashboard" element={<WorkplaceDashboard />} />
             <Route path="/academic-dashboard" element={<AcademicDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             
-            {/* Common routes accessible by all roles */}
+            {/* Common routes */}
             <Route path="/internships" element={<Internships />} />
             <Route path="/logs" element={<WeeklyLogs />} />
             <Route path="/evaluations" element={<Evaluations />} />
             <Route path="/profile" element={<Profile />} />
             
-            {/* Default redirect - sends user to their role-specific dashboard */}
+            {/* Default redirect */}
             <Route path="/" element={<Navigate to={getDashboardByRole()} />} />
           </Route>
         </Route>
